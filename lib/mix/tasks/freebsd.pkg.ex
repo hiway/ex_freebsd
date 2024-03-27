@@ -121,20 +121,17 @@ defmodule Mix.Tasks.Freebsd.Pkg do
     File.mkdir_p!(conf_dir)
     File.chmod!(conf_dir, 0o755)
 
+    env_sample_file = "#{conf_dir}/#{FreeBSD.env_file_name()}.sample"
     if sample_file == nil do
       env_sample_contents = """
       # Environment variables defined here will be available to your application.
       # RELEASE_COOKIE="generate with Base.url_encode64(:crypto.strong_rand_bytes(40))"
       # DATABASE_URL="ecto://username:password@host/database"
       """
-      env_sample_file = "#{conf_dir}/#{FreeBSD.env_file_name()}.sample"
       File.write!(env_sample_file, env_sample_contents)
-      File.chmod!(env_sample_file, 0o660)
     else
-      env_sample_contents = File.read!(sample_file)
-      env_sample_file = "#{conf_dir}/#{FreeBSD.env_file_name()}.sample"
-      File.write!(env_sample_file, env_sample_contents)
-      File.chmod!(env_sample_file, 0o660)
+      File.write!(env_sample_file, File.read!(sample_file))
     end
+    File.chmod!(env_sample_file, 0o660)
   end
 end
