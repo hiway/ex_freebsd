@@ -11,7 +11,7 @@ defmodule Mix.Tasks.Freebsd.Pkg do
 
     # elixir stuff
     manifest()
-    stage()
+    stage(config[:env_sample_file])
 
     # FreeBSD stuff
     rc(config)
@@ -75,11 +75,11 @@ defmodule Mix.Tasks.Freebsd.Pkg do
     File.mkdir_p!(tmp_dir())
   end
 
-  defp stage do
+  defp stage(sample_file) do
     libexec_dir = "#{install_dir()}/libexec/#{FreeBSD.pkg_name()}"
     File.mkdir_p!(libexec_dir)
     File.cp_r!(rel_dir(), libexec_dir)
-    make_sample_file()
+    make_sample_file(sample_file)
   end
 
   defp plist() do
@@ -116,19 +116,26 @@ defmodule Mix.Tasks.Freebsd.Pkg do
     |> Stream.map(&String.replace(&1, "#{stage_dir()}#{FreeBSD.pkg_prefix()}/", ""))
   end
 
-  defp make_sample_file do
+  defp make_sample_file(sample_file) do
     conf_dir = stage_dir() <> FreeBSD.conf_dir()
     File.mkdir_p!(conf_dir)
     File.chmod!(conf_dir, 0o755)
 
-    env_sample_contents = """
-    # Environment variables defined here will be available to your application.
-    # RELEASE_COOKIE="generate with Base.url_encode64(:crypto.strong_rand_bytes(40))"
-    # DATABASE_URL="ecto://username:password@host/database"
-    """
-
-    env_sample_file = "#{conf_dir}/#{FreeBSD.env_file_name()}.sample"
-    File.write!(env_sample_file, env_sample_contents)
-    File.chmod!(env_sample_file, 0o660)
+    env_sample_contents = ""
+    if sample_file == nil do
+      env_sample_contents = """
+      # Environment variables defined here will be available to your application.
+      # RELEASE_COOKIE="generate with Base.url_encode64(:crypto.strong_rand_bytes(40))"
+      # DATABASE_URL="ecto://username:password@host/database"
+      """
+      env_sample_file = "#{conf_dir}/#{FreeBSD.env_file_name()}.sample"
+      File.write!(env_sample_file, env_sample_contents)
+      File.chmod!(env_sample_file, 0o660)
+    else
+      env_sample_contents = File.read!(sample_file)
+      env_sample_file = "#{conf_dir}/#{FreeBSD.env_file_name()}.sample"
+      File.write!(env_sample_file, env_sample_contents)
+      File.chmod!(env_sample_file, 0o660)
+    end
   end
 end
