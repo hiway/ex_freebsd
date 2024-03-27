@@ -121,7 +121,6 @@ defmodule Mix.Tasks.Freebsd.Pkg do
     File.mkdir_p!(conf_dir)
     File.chmod!(conf_dir, 0o755)
 
-    env_sample_contents = ""
     if sample_file == nil do
       env_sample_contents = """
       # Environment variables defined here will be available to your application.
