@@ -31,7 +31,8 @@ if [ ! -f $CONFIG_FILE ]
 then
   echo "===> Creating config in ${CONFIG_FILE}"
   cp ${CONFIG_DIR}/<%= @env_file_name %>.sample $CONFIG_FILE
-
-  SECRET_KEY="$( openssl rand -hex 32 | tr -d '\n' )"
-  sed -i '' -e "s/SECRET-KEY-GOES-HERE/${SECRET_KEY}/g" $CONFIG_FILE
 fi
+
+<%= if @post_install_script do %>
+  <%= @post_install_script %>
+<% end %>

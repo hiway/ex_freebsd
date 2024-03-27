@@ -80,13 +80,16 @@ defmodule FreeBSD do
   defp with_user(manifest, username), do: Map.put(manifest, :users, [username])
 
   defp post_install_script do
+    post_install_script_file = freebsd_config() |> Map.fetch!(:post_install_script)
+    post_install_script_content = File.read!(post_install_script_file)
     template_file("post_install.sh.eex")
     |> EEx.eval_file(
       assigns: %{
         pkg_name: pkg_name(),
         pkg_user: pkg_user(),
         config_dir: conf_dir(),
-        env_file_name: env_file_name()
+        env_file_name: env_file_name(),
+        post_install_script: post_install_script_content,
       }
     )
   end
