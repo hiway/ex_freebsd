@@ -15,9 +15,10 @@ logfile="/var/log/${name}.log"
 : ${<%= @pkg_name %>_env_file:=<%= @conf_dir %>/<%= @pkg_name %>.env}
 
 command="<%= FreeBSD.pkg_prefix() %>/<%= @bin_path %>"
-extra_commands="remote"
+extra_commands="remote iex"
 start_cmd=<%= @pkg_name %>_start
 remote_cmd=<%= @pkg_name %>_remote
+iex_cmd=<%= @pkg_name %>_iex
 
 <%= @pkg_name %>_start()
 {
@@ -43,6 +44,12 @@ remote_cmd=<%= @pkg_name %>_remote
 {
   export TERM=xterm
   $command remote
+}
+
+<%= @pkg_name %>_iex()
+{
+  export TERM=xterm
+  $command start_iex
 }
 
 load_rc_config $name
