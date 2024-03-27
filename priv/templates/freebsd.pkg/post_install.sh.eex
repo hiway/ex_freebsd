@@ -32,11 +32,6 @@ then
   echo "===> Creating config in ${CONFIG_FILE}"
   cp ${CONFIG_DIR}/<%= @env_file_name %>.sample $CONFIG_FILE
 
-  # if SECRET_KEY_BASE is defined in the config file, generate it
-  if grep -q "SECRET_KEY_BASE" $CONFIG_FILE
-  then
-    echo "===> Generating SECRET_KEY_BASE"
-    SECRET_KEY_BASE="$( openssl rand -hex 32 | tr -d '\n' )"
-    sed -i '' -e "s/CHANGE-ME/${SECRET_KEY_BASE}/g" $CONFIG_FILE
-  fi
+  SECRET_KEY="$( openssl rand -hex 32 | tr -d '\n' )"
+  sed -i '' -e "s/SECRET-KEY-GOES-HERE/${SECRET_KEY}/g" $CONFIG_FILE
 fi

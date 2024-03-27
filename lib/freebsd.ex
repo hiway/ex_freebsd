@@ -56,7 +56,18 @@ defmodule FreeBSD do
 
   def conf_dir_var, do: pkg_name() |> String.upcase()
 
-  def env_file_name, do: "#{pkg_name()}.env"
+  def env_file_name do
+    env_sample_file = freebsd_config() |> Map.fetch!(:env_sample_file)
+    if env_sample_file == nil do
+      "#{pkg_name()}.env"
+    else
+      if env_sample_file |> Path.extname() == ".sample" do
+        env_sample_file |> Path.basename() |> Path.rootname()
+      else
+        env_sample_file
+      end
+    end
+  end
 
   def pkg_user, do: freebsd_config() |> Map.get(:user)
 
